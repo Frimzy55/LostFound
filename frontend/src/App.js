@@ -12,7 +12,7 @@ import Notifications from './sidemenus/Notifications';
 import Profile from './sidemenus/Profile';
 import ChangePassword from './sidemenus/ChangePassword';
 import Help from './sidemenus/Help';
-import DashboardHome from './sidemenus/DashboardHome'; // <- create this
+import DashboardHome from './sidemenus/DashboardHome';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -21,6 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -38,7 +39,7 @@ function App() {
           <Route path="help" element={<Help />} />
         </Route>
 
-        {/* ADMIN ROUTE */}
+        {/* ADMIN ROUTES */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>

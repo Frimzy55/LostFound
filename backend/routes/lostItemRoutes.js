@@ -3,6 +3,9 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { reportLostItem } from '../controllers/lostItemController.js';
+//import express from 'express';
+
+
 
 const router = express.Router();
 
@@ -18,5 +21,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/report', upload.single('photo'), reportLostItem);
+
+
+
+
+
+
 
 export default router;

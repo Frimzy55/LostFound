@@ -1,5 +1,7 @@
 // src/components/ReportFoundItem.jsx
 import React, { useState } from 'react';
+import axios from "axios";
+
 
 export default function ReportFoundItem() {
   const [formData, setFormData] = useState({
@@ -23,11 +25,25 @@ export default function ReportFoundItem() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Found item report submitted!');
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const formDataObj = new FormData();
+  for (const key in formData) {
+    formDataObj.append(key, formData[key]);
+  }
+
+  try {
+    const res = await axios.post("http://localhost:5000/api/found-items", formDataObj, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    alert(res.data.message);
+    console.log(res.data);
+  } catch (error) {
+    console.error(error);
+    alert("Error submitting report.");
+  }
+};
 
   return (
     <div className="container mt-4">

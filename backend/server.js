@@ -7,6 +7,10 @@ import lostItemRoutes from './routes/lostItemRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import foundItemRoutes from "./routes/foundItemRoutes.js";
+
+
+
 
 
 dotenv.config();
@@ -27,6 +31,9 @@ app.use(cors());
 app.use(express.json());
 //app.use(express.urlencoded({ extended: true }));
 //app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static("uploads")); // serve uploaded files
+
+//app.use("/uploads", express.static("uploads"));
 
 
 
@@ -43,6 +50,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/lost-items', lostItemRoutes);
 
+app.use("/api/found-items", foundItemRoutes);
+
+
 // Example protected and admin-only routes
 import { authenticateToken, authorizeAdmin } from './middleware/authMiddleware.js';
 
@@ -53,6 +63,12 @@ app.get('/api/protected', authenticateToken, (req, res) => {
 app.get('/api/admin/dashboard', authenticateToken, authorizeAdmin, (req, res) => {
   res.json({ message: `Hello Admin ${req.user.email}, welcome to the admin dashboard.` });
 });
+
+
+
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

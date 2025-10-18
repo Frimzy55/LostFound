@@ -7,17 +7,32 @@ export default function MyReports() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch user's reports from backend
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch('/api/my-reports', {
+        // Fetch lost items
+        const lostRes = await fetch('/api/lost-items', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const data = await response.json();
-        setReports(data);
+        const lostItems = await lostRes.json();
+
+        // Fetch found items
+        const foundRes = await fetch('/api/found-items', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const foundItems = await foundRes.json();
+
+        // Combine lost and found items
+        const combinedReports = [
+          ...lostItems.map((item) => ({ ...item, type: 'Lost' })),
+          ...foundItems.map((item) => ({ ...item, type: 'Found' })),
+        ];
+
+        setReports(combinedReports);
       } catch (error) {
         console.error('Error fetching reports:', error);
       } finally {
@@ -28,19 +43,19 @@ export default function MyReports() {
     fetchReports();
   }, []);
 
-  const handleView = (id) => {
-    navigate(`/report-details/${id}`);
+  const handleView = (id, type) => {
+    navigate(`/${type.toLowerCase()}-report/${id}`);
   };
 
-  const handleEdit = (id) => {
-    navigate(`/edit-report/${id}`);
+  const handleEdit = (id, type) => {
+    navigate(`/edit-${type.toLowerCase()}-report/${id}`);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, type) => {
     if (!window.confirm('Are you sure you want to delete this report?')) return;
 
     try {
-      const res = await fetch(`/api/reports/${id}`, {
+      const res = await fetch(`/api/${type.toLowerCase()}-items/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -55,9 +70,7 @@ export default function MyReports() {
     }
   };
 
-  if (loading) {
-    return <p className="m-4">Loading your reports...</p>;
-  }
+  if (loading) return <p className="m-4">Loading your reports...</p>;
 
   return (
     <div className="container mt-4">
@@ -69,6 +82,7 @@ export default function MyReports() {
         <table className="table table-hover">
           <thead className="table-light">
             <tr>
+              <th>Type</th>
               <th>Item</th>
               <th>Status</th>
               <th>Date Reported</th>
@@ -77,7 +91,8 @@ export default function MyReports() {
           </thead>
           <tbody>
             {reports.map((report) => (
-              <tr key={report.id}>
+              <tr key={`${report.type}-${report.id}`}>
+                <td>{report.type}</td>
                 <td>{report.itemType}</td>
                 <td>
                   <span
@@ -100,19 +115,19 @@ export default function MyReports() {
                 <td>
                   <button
                     className="btn btn-sm btn-info me-2"
-                    onClick={() => handleView(report.id)}
+                    onClick={() => handleView(report.id, report.type)}
                   >
                     View
                   </button>
                   <button
                     className="btn btn-sm btn-warning me-2"
-                    onClick={() => handleEdit(report.id)}
+                    onClick={() => handleEdit(report.id, report.type)}
                   >
                     Edit
                   </button>
                   <button
                     className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(report.id)}
+                    onClick={() => handleDelete(report.id, report.type)}
                   >
                     Delete
                   </button>

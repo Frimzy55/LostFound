@@ -1,18 +1,33 @@
 // src/components/DashboardHome.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaInbox, FaCheckCircle, FaBell, FaHistory } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 export default function DashboardHome() {
   const user = JSON.parse(localStorage.getItem('user')) || {};
-  
-  // Example summary counts (replace with real API data later)
-  const stats = {
-    lost: 2,
-    found: 1,
-    matched: 1,
-    unread: 3
-  };
+  const [stats, setStats] = useState({
+    lost: 0,
+    found: 0,
+    matched: 0,
+    unread: 0
+  });
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/stats/${user.id}`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, [user?.id]);
 
   return (
     <div className="container mt-4">
@@ -63,10 +78,18 @@ export default function DashboardHome() {
       <div className="mt-4">
         <h5>Quick Actions</h5>
         <div className="d-flex flex-wrap gap-2 mt-2">
-          <Link to="/student/report-lost" className="btn btn-primary">Report Lost Item</Link>
-          <Link to="/student/report-found" className="btn btn-success">Report Found Item</Link>
-          <Link to="/student/my-reports" className="btn btn-secondary">View My Reports</Link>
-          <Link to="/student/matched-items" className="btn btn-warning">Check Matched Items</Link>
+          <Link to="/dashboard/report-lost" className="btn btn-primary">
+            Report Lost Item
+          </Link>
+          <Link to="/dashboard/report-found" className="btn btn-success">
+            Report Found Item
+          </Link>
+          <Link to="/dashboard/my-reports" className="btn btn-secondary">
+            View My Reports
+          </Link>
+          <Link to="/dashboard/matched-items" className="btn btn-warning">
+            Check Matched Items
+          </Link>
         </div>
       </div>
     </div>

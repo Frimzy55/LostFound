@@ -1,140 +1,179 @@
-// src/ReportLostItem.jsx
+// src/components/ReportFoundItem.jsx
 import React, { useState } from 'react';
-import axios from 'axios'; 
+import axios from "axios";
 
-export default function ReportLostItem() {
+
+export default function ReportFoundItem() {
   const [formData, setFormData] = useState({
-    itemName: '',
-    description: '',
-    locationLost: '',
-    dateLost: '',
-    timeLost: '',
-    photo: null,
-    additionalInfo: '',
+    itemType: '',
+    color: '',
+    brand: '',
+    features: '',
+    location: '',
+    dateFound: '',
+    timeFound: '',
+    contactName: '',
+    contactPhone: '',
+    photos: null,
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'photo') {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({
+      ...formData,
+      [name]: files ? files[0] : value,
+    });
   };
-
-  /*const handleSubmit = (e) => {
-    e.preventDefault();
-    // TODO: Send `formData` to backend using fetch or axios
-    console.log(formData);
-    alert('Lost item reported successfully!');
-  };*/
 
   const handleSubmit = async (e) => {
   e.preventDefault();
-  const data = new FormData();
-  for (let key in formData) {
-    data.append(key, formData[key]);
+
+  const formDataObj = new FormData();
+  for (const key in formData) {
+    formDataObj.append(key, formData[key]);
   }
 
   try {
-    const response = await axios.post('http://localhost:5000/api/lost-items/report', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const res = await axios.post("http://localhost:5000/api/found-items", formDataObj, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    alert(response.data.message);
+    alert(res.data.message);
+    console.log(res.data);
   } catch (error) {
-    console.error('Error reporting lost item:', error);
-    alert('Failed to report lost item.');
+    console.error(error);
+    alert("Error submitting report.");
   }
 };
 
   return (
-    <div className="p-4">
-      <h2>You're welcome to report lost item</h2>
-      <p className="text-muted">Please provide details of the lost item in the form below.</p>
-
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+    <div className="container mt-4">
+      <h3 className="mb-4">Report a Found Item</h3>
+      <form onSubmit={handleSubmit}>
+        {/* Item Type */}
         <div className="mb-3">
-          <label className="form-label">Item Name *</label>
+          <label className="form-label">Type of Item</label>
           <input
             type="text"
-            name="itemName"
             className="form-control"
-            value={formData.itemName}
+            name="itemType"
+            value={formData.itemType}
+            onChange={handleChange}
+            placeholder="e.g., Phone, Wallet, ID Card, Keys"
+            required
+          />
+        </div>
+
+        {/* Color */}
+        <div className="mb-3">
+          <label className="form-label">Color</label>
+          <input
+            type="text"
+            className="form-control"
+            name="color"
+            value={formData.color}
             onChange={handleChange}
             required
           />
         </div>
 
+        {/* Brand */}
         <div className="mb-3">
-          <label className="form-label">Description *</label>
+          <label className="form-label">Brand</label>
+          <input
+            type="text"
+            className="form-control"
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Unique Features */}
+        <div className="mb-3">
+          <label className="form-label">Unique Features</label>
           <textarea
-            name="description"
             className="form-control"
-            rows="3"
-            value={formData.description}
+            name="features"
+            value={formData.features}
             onChange={handleChange}
-            required
-          ></textarea>
+            placeholder="Any unique marks, stickers, scratches, etc."
+          />
         </div>
 
+        {/* Location */}
         <div className="mb-3">
-          <label className="form-label">Location Lost *</label>
+          <label className="form-label">Found Location</label>
           <input
             type="text"
-            name="locationLost"
             className="form-control"
-            value={formData.locationLost}
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Building, classroom, bus stop, etc."
+            required
+          />
+        </div>
+
+        {/* Date and Time */}
+        <div className="mb-3">
+          <label className="form-label">Date Found</label>
+          <input
+            type="date"
+            className="form-control"
+            name="dateFound"
+            value={formData.dateFound}
             onChange={handleChange}
             required
           />
         </div>
 
-        <div className="row mb-3">
-          <div className="col">
-            <label className="form-label">Date Lost *</label>
-            <input
-              type="date"
-              name="dateLost"
-              className="form-control"
-              value={formData.dateLost}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col">
-            <label className="form-label">Time (optional)</label>
-            <input
-              type="time"
-              name="timeLost"
-              className="form-control"
-              value={formData.timeLost}
-              onChange={handleChange}
-            />
-          </div>
+        <div className="mb-3">
+          <label className="form-label">Time Found</label>
+          <input
+            type="time"
+            className="form-control"
+            name="timeFound"
+            value={formData.timeFound}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Contact Info */}
+        <div className="mb-3">
+          <label className="form-label">Contact Name</label>
+          <input
+            type="text"
+            className="form-control"
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Upload Photo (optional)</label>
+          <label className="form-label">Contact Phone</label>
+          <input
+            type="tel"
+            className="form-control"
+            name="contactPhone"
+            value={formData.contactPhone}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Photos */}
+        <div className="mb-3">
+          <label className="form-label">Upload Photo</label>
           <input
             type="file"
-            name="photo"
             className="form-control"
+            name="photos"
             accept="image/*"
             onChange={handleChange}
           />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Additional Info (optional)</label>
-          <textarea
-            name="additionalInfo"
-            className="form-control"
-            rows="2"
-            value={formData.additionalInfo}
-            onChange={handleChange}
-          ></textarea>
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
